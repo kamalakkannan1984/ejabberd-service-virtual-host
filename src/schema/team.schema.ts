@@ -201,4 +201,17 @@ team.removeMember = {
   },
 };
 
+team.publicMember = {
+  body: {
+    type: 'object',
+    properties: {
+      company_id: { type: 'number' },
+      name: { type: 'string' },
+      service: { type: 'string' },
+      resource_id: { type: 'string' },
+      jid: { type: 'string' },
+    },
+  },
+};
+
 export const teamSchema = team;

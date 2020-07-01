@@ -2,7 +2,7 @@
  * @createdBy Kamal
  * @createdOn 19th June 2020
  */
-import { mysqlConnection, mysqlPoolConnection } from '../db/index';
+import { mysqlPoolConnection } from '../db/index';
 export const chatHistoryModel: any = {};
 
 /**

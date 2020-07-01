@@ -635,6 +635,22 @@ export const configureRoutes = (fastify: any, options: any, done: any) => {
     },
     callHistoryHandlers.getCallHistory,
   );
+
+  fastify.delete(
+    '/api/call_history/:uuid',
+    {
+      preValidation: [fastify.validateSession],
+      schema: {
+        description: 'Call history delete by uuid Api',
+        tags: ['call'],
+        //body: callHistorySchema.updateCallHistroy.body,
+        params: callHistorySchema.deleteCallHistory.params,
+        // response: userSchema.createTeamRes
+      },
+    },
+    callHistoryHandlers.deleteCallHistory,
+  );
+
   //end Call histroy routes
   fastify.post(
     '/api/vhost',
@@ -694,7 +710,9 @@ export const configureRoutes = (fastify: any, options: any, done: any) => {
     ejabberdConfigHandlers.getVhost,
   );
 
-  //Ejabberd chat back up history / recent message
+  /**
+   * Ejabberd chat back up history / recent message
+   */
   fastify.post(
     '/api/get_last_messages_paginated',
     {
@@ -709,7 +727,9 @@ export const configureRoutes = (fastify: any, options: any, done: any) => {
     chatHistoryHandlers.getLastMessages,
   );
 
-  //join_public_team
+  /**
+   * join public team member
+   */
   fastify.post(
     '/api/join_public_team',
     {
@@ -717,7 +737,7 @@ export const configureRoutes = (fastify: any, options: any, done: any) => {
       schema: {
         description: 'join public member Api',
         tags: ['team'],
-        // body: teamSchema.publicMember.body,
+        body: teamSchema.publicMember.body,
         // response: userSchema.createTeamRes
       },
     },

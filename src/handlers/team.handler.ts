@@ -656,11 +656,11 @@ teamHandler.joinPublicTeam = async function (req: any, res: any, done: any) {
     data.name = req.body.name;
     data.resource_id = req.body.resource_id;
     data.service = req.body.service;
-    data.toJid = req.body.toJid;
+    data.jid = req.body.jid;
     const team = data.name.match(/\d+/g);
-    const teamMemberTo = data.toJid.split('@');
-    const recordFrom = await userModel.getUserById(teamMemberTo[0]);
-    if (recordFrom.length === 1) {
+    const teamMemberTo = data.jid.split('@');
+    const recordTo = await userModel.getUserById(teamMemberTo[0]);
+    if (recordTo.length === 1) {
       memberData.team_id = team[0];
       memberData.SIPID = teamMemberTo[0];
       memberData.processtype = 1;
@@ -670,7 +670,7 @@ teamHandler.joinPublicTeam = async function (req: any, res: any, done: any) {
         const teamService = new TeamService();
         addMember.name = req.body.name;
         addMember.service = req.body.service;
-        addMember.jid = data.toJid;
+        addMember.jid = data.jid;
         addMember.affiliation = 'member';
         await teamService.setRoomAffiliation(addMember);
         //send Direct invitation
@@ -683,12 +683,11 @@ teamHandler.joinPublicTeam = async function (req: any, res: any, done: any) {
         await messageService.sendDirectInvitation(teamData);
 
         const stanzaData: any = {};
-        stanzaData.from = `${data.fromJid}/${data.resource_id}`;
+        stanzaData.from = `${data.jid}/${data.resource_id}`;
         stanzaData.to = `${teamData.name}@${teamData.service}`;
         stanzaData.name = teamData.name;
-        const recordTo = await userModel.getUserById(teamMemberTo[0]);
-        stanzaData.body = recordFrom[0].caller_id + ' Added ' + recordTo[0].caller_id;
-        stanzaData.stanza = `<message to='${stanzaData.to}' type='groupchat' from='${stanzaData.from}'><body> ${stanzaData.body} </body><markable xmlns='urn:xmpp:chat-markers:0'/><broadcast name='${recordTo[0].caller_id}' jid='${addMember.jid}' created_by='${recordFrom[0].caller_id}' xmlns='urn:xmpp:message-correct:0'/><message-type  value='ADD' xmlns='urn:xmpp:message-correct:0'/><active xmlns='http://jabber.org/protocol/chatstates'/></message>`;
+        stanzaData.body = recordTo[0].caller_id + ' Joined ';
+        stanzaData.stanza = `<message to='${stanzaData.to}' type='groupchat' from='${stanzaData.from}'><body> ${stanzaData.body} </body><markable xmlns='urn:xmpp:chat-markers:0'/><broadcast name='${recordTo[0].caller_id}' jid='${addMember.jid}' created_by='${recordTo[0].caller_id}' xmlns='urn:xmpp:message-correct:0'/><message-type  value='ADD' xmlns='urn:xmpp:message-correct:0'/><active xmlns='http://jabber.org/protocol/chatstates'/></message>`;
         console.log(stanzaData);
         await messageService.sendStanza(stanzaData);
         //broadcastMessage(stanzaData);

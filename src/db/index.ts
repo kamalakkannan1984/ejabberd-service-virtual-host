@@ -1,6 +1,9 @@
 import sql from 'mssql';
 import mysql from 'mysql';
 
+/**
+ * mssql connection config
+ */
 const sqlConfig = {
   user: 'smepbx',
   password: 'smeswitch',
@@ -17,16 +20,14 @@ const sqlConfig = {
   },
 };
 
-export const mysqlConnection = mysql.createConnection({
-  host: '82.113.74.51',
-  user: 'ejabberd',
-  password: 'Vicarage@2019',
-  database: 'ejabberd',
-});
+/**
+ * Mssql pool connection
+ */
+export const mssqlPoolConnection = new sql.ConnectionPool('mssql://smepbx:smeswitch@10.22.2.86/unifiedring');
 
-mysqlConnection.connect();
-
-//
+/**
+ * Mysql pool connection
+ */
 export const mysqlPoolConnection = mysql.createPool({
   connectionLimit: 10,
   host: '82.113.74.51',
@@ -34,6 +35,3 @@ export const mysqlPoolConnection = mysql.createPool({
   password: 'Vicarage@2019',
   database: 'ejabberd',
 });
-//
-
-export const mssqlPoolConnection = new sql.ConnectionPool('mssql://smepbx:smeswitch@10.22.2.86/unifiedring');
