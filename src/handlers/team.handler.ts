@@ -399,9 +399,8 @@ teamHandler.leaveTeam = async function (req: any, res: any, done: any) {
       stanzaData.to = `${data.name}@${data.service}`;
       stanzaData.name = data.name;
       stanzaData.body = record[0].caller_id + ' has left';
-      stanzaData.stanza = `<message to='${stanzaData.to}' type='groupchat' from='${stanzaData.from}'><body> ${stanzaData.body} </body><markable xmlns='urn:xmpp:chat-markers:0'/><broadcast name='${record[0].caller_id}' xmlns='urn:xmpp:message-correct:0'/><message-type  value='LEAVE' xmlns='urn:xmpp:message-correct:0'/><active xmlns='http://jabber.org/protocol/chatstates'/></message>`;
-      console.log(stanzaData);
-      await messageService.sendStanza(stanzaData);
+      stanzaData.stanza = `<message to='${stanzaData.to}' type='groupchat' from='${stanzaData.from}'><body> ${stanzaData.body} </body><markable xmlns='urn:xmpp:chat-markers:0'/><broadcast name='${record[0].caller_id}' jid='${data.jid}' created_by='${record[0].caller_id}' xmlns='urn:xmpp:message-correct:0'/><message-type  value='LEAVE' xmlns='urn:xmpp:message-correct:0'/><active xmlns='http://jabber.org/protocol/chatstates'/></message>`;
+
       //broadcastMessage(stanzaData);
       //
       const team = data.name.match(/\d+/g);
@@ -410,7 +409,7 @@ teamHandler.leaveTeam = async function (req: any, res: any, done: any) {
         const resTeam = await userModel.leaveTeam(data);
         if (resTeam[0].errcode !== -1) {
           // await messageService.sendMessage(messageData);
-          broadcastMessage(stanzaData);
+          await messageService.sendStanza(stanzaData);
           const setRoomAffiliationsResult = await teamService.setRoomAffiliation(data);
           if (setRoomAffiliationsResult === 0) {
             res.send({ status_code: 200, message: 'User left successfully' });
@@ -562,7 +561,7 @@ teamHandler.addMember = async function (req: any, res: any, done: any) {
         teamMemberTo = memberDataArr[i].split('@');
         const recordTo = await userModel.getUserById(teamMemberTo[0]);
         stanzaData.body = recordFrom[0].caller_id + ' Added ' + recordTo[0].caller_id;
-        stanzaData.stanza = `<message to='${stanzaData.to}' type='groupchat' from='${stanzaData.from}'><body> ${stanzaData.body} </body><markable xmlns='urn:xmpp:chat-markers:0'/><broadcast name='${recordTo[0].caller_id}' xmlns='urn:xmpp:message-correct:0'/><message-type  value='ADD' xmlns='urn:xmpp:message-correct:0'/><active xmlns='http://jabber.org/protocol/chatstates'/></message>`;
+        stanzaData.stanza = `<message to='${stanzaData.to}' type='groupchat' from='${stanzaData.from}'><body> ${stanzaData.body} </body><markable xmlns='urn:xmpp:chat-markers:0'/><broadcast name='${recordTo[0].caller_id}' jid='${memberDataArr[i]}' created_by='${recordFrom[0].caller_id}' xmlns='urn:xmpp:message-correct:0'/><message-type  value='ADD' xmlns='urn:xmpp:message-correct:0'/><active xmlns='http://jabber.org/protocol/chatstates'/></message>`;
         console.log(stanzaData);
         await messageService.sendStanza(stanzaData);
         //broadcastMessage(stanzaData);
@@ -619,7 +618,7 @@ teamHandler.removeMember = async function (req: any, res: any, done: any) {
         stanzaData.to = `${data.name}@${data.service}`;
         stanzaData.name = data.name;
         stanzaData.body = recordFrom[0].caller_id + ' Removed ' + recordTo[0].caller_id;
-        stanzaData.stanza = `<message to='${stanzaData.to}' type='groupchat' from='${stanzaData.from}'><body> ${stanzaData.body} </body><markable xmlns='urn:xmpp:chat-markers:0'/><broadcast name='${recordTo[0].caller_id}'  xmlns='urn:xmpp:message-correct:0'/><message-type  value='REMOVE' xmlns='urn:xmpp:message-correct:0'/><active xmlns='http://jabber.org/protocol/chatstates'/></message>`;
+        stanzaData.stanza = `<message to='${stanzaData.to}' type='groupchat' from='${stanzaData.from}'><body> ${stanzaData.body} </body><markable xmlns='urn:xmpp:chat-markers:0'/><broadcast name='${recordTo[0].caller_id}' jid='${data.toJid}' created_by='${recordFrom[0].caller_id}'  xmlns='urn:xmpp:message-correct:0'/><message-type  value='REMOVE' xmlns='urn:xmpp:message-correct:0'/><active xmlns='http://jabber.org/protocol/chatstates'/></message>`;
         console.log(stanzaData);
         await messageService.sendStanza(stanzaData);
         //broadcastMessage(stanzaData);

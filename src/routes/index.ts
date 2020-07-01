@@ -309,7 +309,7 @@ export const configureRoutes = (fastify: any, options: any, done: any) => {
   fastify.post(
     '/api/user_sessions_info',
     {
-      preValidation: [fastify.validateSession],
+      //preValidation: [fastify.validateSession],
       schema: {
         description: 'Get user session or presence information api',
         tags: ['user'],
