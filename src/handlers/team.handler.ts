@@ -642,6 +642,69 @@ teamHandler.removeMember = async function (req: any, res: any, done: any) {
   }
 };
 
+/**
+ * Join public team
+ *
+ */
+teamHandler.joinPublicTeam = async function (req: any, res: any, done: any) {
+  try {
+    const data: any = {};
+    const memberData: any = {};
+    const addMember: any = {};
+    const teamData: any = {};
+    data.company_id = req.body.company_id;
+    data.name = req.body.name;
+    data.resource_id = req.body.resource_id;
+    data.service = req.body.service;
+    data.toJid = req.body.toJid;
+    const team = data.name.match(/\d+/g);
+    const teamMemberTo = data.toJid.split('@');
+    const recordFrom = await userModel.getUserById(teamMemberTo[0]);
+    if (recordFrom.length === 1) {
+      memberData.team_id = team[0];
+      memberData.SIPID = teamMemberTo[0];
+      memberData.processtype = 1;
+      const addResult = await userModel.addRemoveMember(memberData);
+      if (addResult[0].errcode !== -1) {
+        // set Room Affiliation
+        const teamService = new TeamService();
+        addMember.name = req.body.name;
+        addMember.service = req.body.service;
+        addMember.jid = data.toJid;
+        addMember.affiliation = 'member';
+        await teamService.setRoomAffiliation(addMember);
+        //send Direct invitation
+        teamData.name = data.name;
+        teamData.service = data.service;
+        teamData.password = '';
+        teamData.reason = data.name;
+        teamData.users = addMember.jid;
+        const messageService = new MessageService();
+        await messageService.sendDirectInvitation(teamData);
+
+        const stanzaData: any = {};
+        stanzaData.from = `${data.fromJid}/${data.resource_id}`;
+        stanzaData.to = `${teamData.name}@${teamData.service}`;
+        stanzaData.name = teamData.name;
+        const recordTo = await userModel.getUserById(teamMemberTo[0]);
+        stanzaData.body = recordFrom[0].caller_id + ' Added ' + recordTo[0].caller_id;
+        stanzaData.stanza = `<message to='${stanzaData.to}' type='groupchat' from='${stanzaData.from}'><body> ${stanzaData.body} </body><markable xmlns='urn:xmpp:chat-markers:0'/><broadcast name='${recordTo[0].caller_id}' jid='${addMember.jid}' created_by='${recordFrom[0].caller_id}' xmlns='urn:xmpp:message-correct:0'/><message-type  value='ADD' xmlns='urn:xmpp:message-correct:0'/><active xmlns='http://jabber.org/protocol/chatstates'/></message>`;
+        console.log(stanzaData);
+        await messageService.sendStanza(stanzaData);
+        //broadcastMessage(stanzaData);
+        res.send({ status_code: 200, message: 'Member added successfully' });
+      } else {
+        res.send({ status_code: 404, message: addResult[0].errmsg });
+      }
+    } else {
+      res.send({ status_code: 404, message: 'User not found' });
+    }
+  } catch (err) {
+    console.log(err);
+    res.send({ status_code: 500, message: 'internal server error' });
+  }
+};
+
 async function broadcastMessage(stanzaData: any) {
   const messageService = new MessageService();
   stanzaData.stanza = `<message to='${stanzaData.to}' type='groupchat' from='${stanzaData.from}'><body> ${stanzaData.body} </body><markable xmlns='urn:xmpp:chat-markers:0'/><broadcast name='${stanzaData.name}' xmlns='urn:xmpp:message-correct:0'/><message-type  value='BROADCAST' xmlns='urn:xmpp:message-correct:0'/><active xmlns='http://jabber.org/protocol/chatstates'/></message>`;

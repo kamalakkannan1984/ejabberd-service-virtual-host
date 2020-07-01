@@ -6,6 +6,15 @@ const sqlConfig = {
   password: 'smeswitch',
   server: '10.22.2.86',
   database: 'unifiedring',
+  pool: {
+    max: 10,
+    min: 0,
+    idleTimeoutMillis: 30000,
+  },
+  options: {
+    encrypt: true,
+    enableArithAbort: true,
+  },
 };
 
 export const mysqlConnection = mysql.createConnection({

@@ -694,36 +694,6 @@ export const configureRoutes = (fastify: any, options: any, done: any) => {
     ejabberdConfigHandlers.getVhost,
   );
 
-  //push notification
-  fastify.post(
-    '/api/push_notification_andriod',
-    {
-      //preValidation: [fastify.validateSession],
-      schema: {
-        description: 'send push notification andriod',
-        tags: ['push notification'],
-        body: pushNotificationSchema.pushNotificationAndriod.body,
-        // response: userSchema.createTeamRes
-      },
-    },
-    pushNotificationHandlers.pushNotificationAndriod,
-  );
-
-  fastify.post(
-    '/api/push_notification_ios',
-    {
-      //preValidation: [fastify.validateSession],
-      schema: {
-        description: 'send push notification ios',
-        tags: ['push notification'],
-        body: pushNotificationSchema.pushNotificationIos.body,
-        // response: userSchema.createTeamRes
-      },
-    },
-    pushNotificationHandlers.pushNotificationIos,
-  );
-  //push notification
-
   //Ejabberd chat back up history / recent message
   fastify.post(
     '/api/get_last_messages_paginated',
@@ -738,5 +708,21 @@ export const configureRoutes = (fastify: any, options: any, done: any) => {
     },
     chatHistoryHandlers.getLastMessages,
   );
+
+  //join_public_team
+  fastify.post(
+    '/api/join_public_team',
+    {
+      preValidation: [fastify.validateSession],
+      schema: {
+        description: 'join public member Api',
+        tags: ['team'],
+        // body: teamSchema.publicMember.body,
+        // response: userSchema.createTeamRes
+      },
+    },
+    teamHandlers.joinPublicTeam,
+  );
+
   done();
 };
