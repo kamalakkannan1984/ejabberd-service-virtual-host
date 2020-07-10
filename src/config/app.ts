@@ -5,20 +5,19 @@
 
 export const config = {
   server: {
-    //82.113.74.51
-    host: process.env.HOST ? process.env.HOST : 'localhost',
-    port: process.env.PORT ? process.env.PORT : 5002,
+    // 82.113.66.120 => Node 1
+    // 82.113.74.69  => Node 2
+    host: process.env.HOST ? process.env.HOST : '82.113.74.69',
+    port: process.env.PORT ? process.env.PORT : 5001,
   },
   logger_level: process.env.LOGGER_LEVEL,
   jwt_secret: process.env.JWT_SECRET ? process.env.JWT_SECRET : 'sscret',
   basic_uname: process.env.BASIC_UNAME ? process.env.BASIC_UNAME : 'admin',
   basic_pw: process.env.BASIC_PW ? process.env.BASIC_PW : 'Ej@bberD',
   apiRoutePrefix: '/api',
-  ejabberdHost: 'im01.unifiedring.co.uk',
+  ejabberdHost: 'urchat.unifiedring.co.uk',
   ejabberdPort: '5443',
   ejabberdApiPrefix: 'api',
-  FCMkey:
-    'AAAAACKNddw:APA91bHCuk0JA_UynqJ_Oda2FoUayccFguMxbFrkQ8UbE80zoUBBdK-f-XG-6kBNn6EMY-ti3LOKjvqndwJiKTlNNCKP7HCoS5YWo47xQPEQTa1eMB7aDa6yvWrbpUmpsbxUePNIE7iQ',
   cors_options: {
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -35,10 +34,10 @@ export const config = {
     exposeRoute: true,
     routePrefix: '/api/documentation',
     swagger: {
-      host: `${process.env.HOST ? process.env.HOST : '82.113.74.51'}:${process.env.PORT ? process.env.PORT : 5002}`,
+      host: `${process.env.HOST ? process.env.HOST : '82.113.74.69'}:${process.env.PORT ? process.env.PORT : 5001}`,
       info: {
-        title: 'Ejabberd Rest API Service',
-        description: 'Ejabberd Rest api swagger documentation',
+        title: 'Ejabberd Virtual Host Rest API Service',
+        description: 'Ejabberd Virtual Host Rest api swagger documentation',
         version: process.env.VERSION,
       },
       consumes: ['application/json'],
@@ -49,28 +48,8 @@ export const config = {
           description: 'Testing related end-points',
         },
         {
-          name: 'user',
-          description: 'User related end-points',
-        },
-        {
-          name: 'team',
-          description: 'Team related end-points',
-        },
-        {
-          name: 'message',
-          description: 'Message related end-points',
-        },
-        {
-          name: 'event',
-          description: 'Event related end-points',
-        },
-        {
-          name: 'tasks',
-          description: 'Tasks related end-points',
-        },
-        {
-          name: 'note',
-          description: 'Note related end-points',
+          name: 'host',
+          description: 'Host related end-points',
         },
       ],
     },
